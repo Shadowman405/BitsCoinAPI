@@ -1,11 +1,3 @@
-//
-//  ViewController.swift
-//  ByteCoin
-//
-//  Created by Angela Yu on 11/09/2019.
-//  Copyright © 2019 The App Brewery. All rights reserved.
-//
-
 import UIKit
 
 class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
@@ -14,7 +6,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     @IBOutlet weak var currencyLbl: UILabel!
     @IBOutlet weak var currencyPicker: UIPickerView!
     
-    let coinManager = CoinManager()
+    var coinManager = CoinManager()
     
     
     override func viewDidLoad() {
@@ -22,11 +14,11 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         
         currencyPicker.dataSource = self
         currencyPicker.delegate = self
+        coinManager.delegate = self
     }
-
-
 }
 
+// MARK: - Extensions
 
 extension ViewController {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -43,8 +35,20 @@ extension ViewController {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selectedCurrency = coinManager.currencyArray[row]
+        currencyLbl.text = selectedCurrency
         DispatchQueue.main.async {
             self.coinManager.getCoinPrice(for: selectedCurrency)
         }
     }
+}
+
+
+// Update rate through delegate
+extension ViewController: CoinManagerDelegate {
+    func didUpdateRate(_ weatherManager: CoinManager, rate: String) {
+        DispatchQueue.main.async {
+            self.bitcoinLbl.text = rate
+        }
+    }
+    
 }
